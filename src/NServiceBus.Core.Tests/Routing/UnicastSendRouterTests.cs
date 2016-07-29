@@ -29,12 +29,12 @@
         }
 
         [Test]
-        public async Task When_multiple_instances_for_logical_endpoints_should_route_message_to_a_single_instance_of_each_logical_endpoint()
+        public async Task When_multiple_dynamic_instances_for_logical_endpoints_should_route_message_to_a_single_instance_of_each_logical_endpoint()
         {
             var sales = "Sales";
             var shipping = "Shipping";
-            routingTable.RouteToEndpoint(typeof(Command), sales);
-            routingTable.RouteToEndpoint(typeof(Command), shipping);
+            routingTable.AddDynamic((t, c) => new[] { UnicastRoute.CreateFromEndpointName(sales) });
+            routingTable.AddDynamic((t, c) => new[] { UnicastRoute.CreateFromEndpointName(shipping) });
 
             endpointInstances.Add(new EndpointInstance(sales, "1"));
             endpointInstances.AddDynamic(e => Task.FromResult(EnumerableEx.Single(new EndpointInstance(sales, "2"))));
